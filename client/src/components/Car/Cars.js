@@ -1,13 +1,14 @@
-import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 
 import Spinner from "../Common/Spinner";
 import CarCard from "./CarCard";
 
 const ALL_CARS = gql`
-  {
-    cars {
+  query GetCars($limit: Int!, $skip: Int!) {
+    cars(limit: $limit, skip: $skip) {
       id
       name
       make
@@ -20,26 +21,58 @@ const ALL_CARS = gql`
 `;
 
 const Cars = () => {
-  const { loading, error, data } = useQuery(ALL_CARS);
+  const [cars, setCars] = useState(null);
+  const [getAllCars, { loading, data, error }] = useLazyQuery(ALL_CARS);
 
-  if (error) return <p>Error :(</p>;
+  useEffect(() => {
+    getAllCars({ variables: { limit: 2, skip: 2 } });
+  }, []);
 
-  console.log(loading, error, data);
+  if (cars === null && data?.cars) {
+    setCars(data.cars);
+  }
+
+  const fetchData = ({ deleteCar: { id } }) => {
+    let updatedCars = cars.filter((item) => item.id !== id);
+
+    setCars(updatedCars);
+  };
+
+  const renderCars = (carData) => {
+    if (carData !== null && carData.length > 0) {
+      return (
+        <div className="card-group justify-content-center">
+          {carData.map(({ id, name, make, company }) => (
+            <CarCard
+              key={id}
+              id={id}
+              name={name}
+              make={make}
+              company={company.name}
+              fetchUpdatedData={fetchData}
+            />
+          ))}
+        </div>
+      );
+    } else if (carData !== null && carData.length === 0) {
+      return (
+        <div className="card-group justify-content-center">
+          <Link to="/add-car" className="btn btn-lg btn-primary">
+            Please add some cars!
+          </Link>
+        </div>
+      );
+    } else {
+      return <Spinner />;
+    }
+  };
 
   return (
     <div className="profiles mt-2">
       <div className="col-md-12">
         <h1 className="display-4 text-center title">Cars</h1>
         <p className="lead text-center">See All Cars Here</p>
-        {loading ? (
-          <Spinner />
-        ) : (
-          <div className="card-group justify-content-center">
-            {data.cars.map(({ id, name, make, company }) => (
-              <CarCard key={id} id={id} name={name} make={make} company={company.name} />
-            ))}
-          </div>
-        )}
+        {renderCars(cars)}
       </div>
     </div>
   );

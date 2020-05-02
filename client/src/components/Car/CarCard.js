@@ -1,8 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useMutation } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
 
-const CarCard = ({ id, name, make, company }) => {
-  const carDeleteHandler = () => console.log(id);
+const DELETE_CAR = gql`
+  mutation DeleteCar($carId: String!) {
+    deleteCar(carId: $carId) {
+      id
+      name
+    }
+  }
+`;
+
+const CarCard = ({ id, name, make, company, fetchUpdatedData }) => {
+  const [deleteCar, { loading }] = useMutation(DELETE_CAR);
+
+  const carDeleteHandler = () => {
+    deleteCar({ variables: { carId: id } })
+      .then((res) => {
+        console.log(res);
+
+        fetchUpdatedData(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="col-lg-3 col-md-4 card-width">
@@ -14,7 +35,7 @@ const CarCard = ({ id, name, make, company }) => {
           <Link to={`/edit-car/:${id}`} className="btn btn-primary mr-2 px-3">
             Edit
           </Link>
-          <button className="btn btn-danger" onClick={carDeleteHandler}>
+          <button className="btn btn-danger" onClick={carDeleteHandler} disabled={loading}>
             Delete
           </button>
         </div>

@@ -14,24 +14,22 @@ const ADD_COMPANY = gql`
   }
 `;
 
-const AddCompany = () => {
+const AddCompany = (props) => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [errors, setErrors] = useState({});
 
-  const [addCompany, { data, loading, error }] = useMutation(ADD_COMPANY);
+  const [addCompany, { loading }] = useMutation(ADD_COMPANY);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log(name, location);
 
     addCompany({ variables: { name: name, location: location } })
       .then((res) => {
-        console.log("res", res);
+        console.log(res);
+        props.history.push("/add-car");
       })
       .catch((err) => {
-        let error = JSON.stringify(err);
-
         if (err?.graphQLErrors[0]?.extensions?.exception?.details[0]?.path[0] === "name") {
           errors.name = err.graphQLErrors[0].extensions.exception.details[0].message;
           setErrors({
@@ -57,11 +55,7 @@ const AddCompany = () => {
           });
         }
       });
-
-    console.log(loading, data, error);
   };
-
-  console.log(errors);
 
   return (
     <div className="container mt-2">
@@ -88,7 +82,11 @@ const AddCompany = () => {
               error={errors.location}
               info="Location of a company"
             />
-            <button type="submit" value="Submit" className="btn btn-dark btn-block mt-4">
+            <button
+              type="submit"
+              value="Submit"
+              className="btn btn-dark btn-block mt-4"
+              disabled={loading}>
               Submit
             </button>
           </form>
