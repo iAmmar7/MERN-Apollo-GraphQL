@@ -1,14 +1,17 @@
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolvers");
 const db = require("./config/keys.js").mongoURI;
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
+
+app.use(cors());
 
 mongoose
   .connect(db, {

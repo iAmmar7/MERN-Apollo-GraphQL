@@ -8,7 +8,6 @@ const { validateCompanyInput } = require("../validation");
 module.exports = {
   Query: {
     companies: (root, args, context, info) => {
-      console.log("asd");
       return Company.find({});
     },
     company: (root, { id }, context, info) => {

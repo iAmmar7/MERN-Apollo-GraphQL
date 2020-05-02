@@ -1,0 +1,27 @@
+* {
+  overflow-x: hidden;
+}
+
+.navbar {
+  box-shadow: 0 0px 1px rgb(0, 0, 0) inset, 0 0 18px rgb(39, 44, 48);
+}
+
+.landing-inner {
+  margin-top: 20vh;
+}
+
+.title {
+  line-height: 1.5;
+}
+
+.card-width {
+  min-width: 400px;
+  min-height: 270px;
+}
+
+.card-item {
+  transition: 0.6s all;
+}
+.card-item:hover {
+  transform: scale(1.05);
+}
