@@ -24,35 +24,29 @@ const AddCompany = (props) => {
   const onSubmit = (e) => {
     e.preventDefault();
 
+    setErrors({});
+
+    console.log(errors, name, location);
+
+    if (name.trim().length < 1) {
+      setErrors({ ...errors, name: "Compnay name is required!" });
+      return;
+    }
+    if (location.trim().length < 1) {
+      setErrors({ ...errors, location: "Compnay location is required!" });
+      return;
+    }
+
     addCompany({ variables: { name: name, location: location } })
       .then((res) => {
         console.log(res);
         props.history.push("/add-car");
       })
       .catch((err) => {
-        if (err?.graphQLErrors[0]?.extensions?.exception?.details[0]?.path[0] === "name") {
-          errors.name = err.graphQLErrors[0].extensions.exception.details[0].message;
-          setErrors({
-            ...errors,
-            name: err.graphQLErrors[0].extensions.exception.details[0].message,
-          });
-        } else {
-          setErrors({
-            ...errors,
-            name: "",
-          });
-        }
+        console.log(JSON.stringify(err));
 
-        if (err?.graphQLErrors[0]?.extensions?.exception?.details[1]?.path[0] === "location") {
-          setErrors({
-            ...errors,
-            location: err.graphQLErrors[0].extensions.exception.details[1].message,
-          });
-        } else {
-          setErrors({
-            ...errors,
-            location: "",
-          });
+        if (err?.graphQLErrors[0]?.message) {
+          setErrors({ name: err?.graphQLErrors[0]?.message });
         }
       });
   };

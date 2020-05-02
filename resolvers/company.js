@@ -20,6 +20,12 @@ module.exports = {
   Mutation: {
     addCompany: async (root, args, context, info) => {
       await Joi.validate(args, validateCompanyInput, { abortEarly: false });
+
+      await Company.findOne({ name: new RegExp("^" + args.name + "$", "i") }).then((res) => {
+        if (res) {
+          throw new UserInputError("The company already exist!");
+        }
+      });
       return Company.create(args);
     },
   },

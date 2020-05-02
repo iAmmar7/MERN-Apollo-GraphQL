@@ -20,9 +20,8 @@ module.exports = {
     },
     carCount: async (root, args, context, info) => {
       let data = await Car.countDocuments({});
-      console.log(data);
-      let data2 = { totalCars: data };
-      return data2;
+      let dataWithCount = { totalCars: data };
+      return dataWithCount;
     },
   },
   Mutation: {
