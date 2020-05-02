@@ -6,9 +6,9 @@ import TextField from "../Common/TextField";
 import SelectList from "../Common/SelectList";
 import Spinner from "../Common/Spinner";
 
-const ADD_CAR = gql`
-  mutation AddCar($name: String!, $make: String!, $company: String!) {
-    addCar(name: $name, make: $make, company: $company) {
+const EDIT_CAR = gql`
+  mutation EditCar($carId: String!, $name: String!, $make: String!, $company: String!) {
+    updateCar(carId: $carId, name: $name, make: $make, company: $company) {
       id
       name
       make
@@ -45,13 +45,13 @@ const EditCar = (props) => {
       setMake(car.make);
     }
     if (company === "") {
-      setCompany(car.company);
+      setCompany(car.company.id);
     }
   }
 
   const allCompanies = useQuery(GET_COMPANIES);
 
-  const [addCar, { loading }] = useMutation(ADD_CAR);
+  const [editCar, { loading }] = useMutation(EDIT_CAR);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +69,9 @@ const EditCar = (props) => {
       setErrors({});
     }
 
-    addCar({ variables: { name: name, make: make, company: company } })
+    editCar({
+      variables: { carId: props.location.state.car.id, name: name, make: make, company: company },
+    })
       .then((res) => {
         console.log(res);
         props.history.push("/all-cars/1");

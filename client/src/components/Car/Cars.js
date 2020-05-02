@@ -7,14 +7,15 @@ import Spinner from "../Common/Spinner";
 import CarCard from "./CarCard";
 
 const ALL_CARS = gql`
-  query AllCars($limit: Int!, $skip: Int!) {
-    cars(limit: $limit, skip: $skip) {
+  {
+    cars {
       id
       name
       make
-      # company {
-      #   id
-      # }
+      company {
+        id
+        name
+      }
     }
   }
 `;
@@ -66,7 +67,7 @@ const Cars = (props) => {
               id={id}
               name={name}
               make={make}
-              // company={company.name}
+              company={company}
               fetchUpdatedData={fetchData}
             />
           ))}

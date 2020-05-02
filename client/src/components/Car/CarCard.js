@@ -38,7 +38,7 @@ const CarCard = ({ id, name, make, company, fetchUpdatedData, history }) => {
         <div className="card-body text-center">
           <h5 className="card-title title">{name}</h5>
           <p className="card-text">{make}</p>
-          <p className="card-text">{company}</p>
+          <p className="card-text">{company.name}</p>
           <button className="btn btn-primary mr-2 px-3" onClick={carEditHandler}>
             Edit
           </button>
