@@ -7,6 +7,7 @@ import Navbar from "./components/Layout/Navbar";
 import Landing from "./components/Layout/Landing";
 import AddCompany from "./components/Company/AddCompany";
 import AddCar from "./components/Car/AddCar";
+import EditCar from "./components/Car/EditCar";
 import Cars from "./components/Car/Cars";
 import "./App.css";
 
@@ -23,6 +24,7 @@ function App() {
           <Route exact path="/" component={Landing} />
           <Route exact path="/add-company" component={AddCompany} />
           <Route exact path="/add-car" component={AddCar} />
+          <Route exact path="/edit-car/:id" component={EditCar} />
           <Route exact path="/all-cars/:page" component={Cars} />
         </div>
       </Router>

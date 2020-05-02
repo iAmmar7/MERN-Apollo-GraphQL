@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 
 import Spinner from "../Common/Spinner";
 import CarCard from "./CarCard";
 
 const ALL_CARS = gql`
-  query GetCars($limit: Int!, $skip: Int!) {
+  query AllCars($limit: Int!, $skip: Int!) {
     cars(limit: $limit, skip: $skip) {
       id
       name
       make
-      company {
-        id
-        name
-      }
+      # company {
+      #   id
+      # }
     }
   }
 `;
@@ -30,24 +29,31 @@ const CARS_COUNT = gql`
 
 const Cars = (props) => {
   const [cars, setCars] = useState(null);
-  const [getAllCars, { loading, data, error }] = useLazyQuery(ALL_CARS);
-  const [getCarCount, response] = useLazyQuery(CARS_COUNT);
+  // const [getAllCars, { loading, data, error }] = useLazyQuery(ALL_CARS);
+  // const [getCarCount, response] = useLazyQuery(CARS_COUNT);
 
-  useEffect(() => {
-    getCarCount();
-    getAllCars({ variables: { limit: 6, skip: Number(props.match.params.page) } });
-  }, []);
+  const allCars = useQuery(ALL_CARS, {
+    variables: { limit: 6, skip: 0 },
+  });
 
-  if (cars === null && data?.cars) {
-    setCars(data.cars);
+  if (cars === null && allCars?.data?.cars) {
+    setCars(allCars.data.cars);
   }
 
-  console.log(response?.data?.carCount?.totalCars);
+  // useEffect(() => {
+  //   //   getCarCount();
+  //   getAllCars({ variables: { limit: 6, skip: Number(props.match.params.page) } });
+  // }, []);
+
+  // if (cars === null && data?.cars) {
+  //   setCars(data.cars);
+  // }
+
+  // console.log(response?.data?.carCount?.totalCars);
 
   const fetchData = ({ deleteCar: { id } }) => {
-    let updatedCars = cars.filter((item) => item.id !== id);
-
-    setCars(updatedCars);
+    // let updatedCars = cars.filter((item) => item.id !== id);
+    // setCars(updatedCars);
   };
 
   const renderCars = (carData) => {
@@ -60,7 +66,7 @@ const Cars = (props) => {
               id={id}
               name={name}
               make={make}
-              company={company.name}
+              // company={company.name}
               fetchUpdatedData={fetchData}
             />
           ))}
@@ -82,42 +88,42 @@ const Cars = (props) => {
   let renderPageNumbers, firstPageItem, lastPageItem;
   const pageNumbers = [];
 
-  if (response?.data?.carCount?.totalCars) {
-    const total = response?.data?.carCount?.totalCars;
-    const lastPage = Math.ceil(total / 6);
+  // if (response?.data?.carCount?.totalCars) {
+  //   const total = response?.data?.carCount?.totalCars;
+  //   const lastPage = Math.ceil(total / 6);
 
-    for (let i = 1; i <= Math.ceil(total / 6); i++) {
-      pageNumbers.push(i);
-    }
+  //   for (let i = 1; i <= Math.ceil(total / 6); i++) {
+  //     pageNumbers.push(i);
+  //   }
 
-    renderPageNumbers = pageNumbers.map((number) => {
-      return (
-        <li
-          key={number}
-          className={Number(props.match.params.page) === number ? "page-item active-page" : ""}>
-          <Link to={`/all-cars/${number}`} className="page-link">
-            {number}
-          </Link>
-        </li>
-      );
-    });
+  //   renderPageNumbers = pageNumbers.map((number) => {
+  //     return (
+  //       <li
+  //         key={number}
+  //         className={Number(props.match.params.page) === number ? "page-item active-page" : ""}>
+  //         <Link to={`/all-cars/${number}`} className="page-link">
+  //           {number}
+  //         </Link>
+  //       </li>
+  //     );
+  //   });
 
-    firstPageItem = (
-      <li key={0} className="page-item">
-        <Link to={`/all-cars/1`} className="page-link">
-          &laquo;
-        </Link>
-      </li>
-    );
+  //   firstPageItem = (
+  //     <li key={0} className="page-item">
+  //       <Link to={`/all-cars/1`} className="page-link">
+  //         &laquo;
+  //       </Link>
+  //     </li>
+  //   );
 
-    lastPageItem = (
-      <li key={lastPage + 1} className="page-item">
-        <Link to={`/all-cars/${lastPage}`} className="page-link">
-          &raquo;
-        </Link>
-      </li>
-    );
-  }
+  //   lastPageItem = (
+  //     <li key={lastPage + 1} className="page-item">
+  //       <Link to={`/all-cars/${lastPage}`} className="page-link">
+  //         &raquo;
+  //       </Link>
+  //     </li>
+  //   );
+  // }
 
   return (
     <div className="profiles mt-2">

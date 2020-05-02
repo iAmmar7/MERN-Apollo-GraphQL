@@ -13,7 +13,7 @@ const Landing = () => {
               Client
             </p>
             <hr />
-            <Link to="/all-cars" className="btn btn-lg btn-primary py-2 px-4 mr-2">
+            <Link to="/all-cars/1" className="btn btn-lg btn-primary py-2 px-4 mr-2">
               See all cars
             </Link>
           </div>
