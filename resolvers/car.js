@@ -7,8 +7,9 @@ const { validateCarInput } = require("../validation");
 
 module.exports = {
   Query: {
-    cars: (root, args, context, info) => {
-      return Car.find({}).limit(args.limit).skip(args.skip).populate("company");
+    cars: async (root, args, context, info) => {
+      let data = await Car.find({}).limit(args.limit).skip(args.skip).populate("company");
+      return data;
     },
     car: (root, { id }, context, info) => {
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -16,6 +17,12 @@ module.exports = {
       }
 
       return Car.findById(id).populate("company");
+    },
+    carCount: async (root, args, context, info) => {
+      let data = await Car.countDocuments({});
+      console.log(data);
+      let data2 = { totalCars: data };
+      return data2;
     },
   },
   Mutation: {

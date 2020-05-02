@@ -3,6 +3,7 @@ const { gql } = require("apollo-server-express");
 module.exports = gql`
   extend type Query {
     cars(limit: Int!, skip: Int!): [Car!]!
+    carCount: CarCount!
     car(id: ID!): Car
   }
 
@@ -17,5 +18,9 @@ module.exports = gql`
     name: String!
     make: String!
     company: Company!
+  }
+
+  type CarCount {
+    totalCars: Int!
   }
 `;

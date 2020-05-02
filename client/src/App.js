@@ -21,7 +21,7 @@ function App() {
           <Navbar />
           <Route exact path="/" component={Landing} />
           <Route exact path="/add-company" component={AddCompany} />
-          <Route exact path="/all-cars" component={Cars} />
+          <Route exact path="/all-cars/:page" component={Cars} />
         </div>
       </Router>
     </ApolloProvider>
