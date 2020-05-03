@@ -18,10 +18,19 @@ module.exports = {
 
       return Car.findById(id).populate("company");
     },
-    carCount: async (root, args, context, info) => {
-      let data = await Car.countDocuments({});
-      let dataWithCount = { totalCars: data };
-      return dataWithCount;
+    paginatedCars: async (root, { limit, page }, context, info) => {
+      let totalCars = await Car.countDocuments({});
+      const offset = (page - 1) * limit;
+      let carsData = await Car.find({}).limit(limit).skip(offset).populate("company");
+
+      let result = {
+        cars: carsData,
+        totalCars: totalCars,
+        perPage: limit,
+        currentPage: page,
+        totalPages: Math.ceil(totalCars / limit),
+      };
+      return result;
     },
   },
   Mutation: {

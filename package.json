@@ -20,7 +20,8 @@
     "graphql": "^15.0.0",
     "joi": "^14.3.1",
     "joi-objectid": "^3.0.1",
-    "mongoose": "^5.9.11"
+    "mongoose": "^5.9.11",
+    "react-apollo": "^3.1.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.3"

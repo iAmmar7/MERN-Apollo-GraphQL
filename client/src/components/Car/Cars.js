@@ -1,60 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
 
 import Spinner from "../Common/Spinner";
 import CarCard from "./CarCard";
-
-const ALL_CARS = gql`
-  {
-    cars {
-      id
-      name
-      make
-      company {
-        id
-        name
-      }
-    }
-  }
-`;
-
-const CARS_COUNT = gql`
-  query GetCarCount {
-    carCount {
-      totalCars
-    }
-  }
-`;
+import { ALL_CARS } from "../../queries/Car";
 
 const Cars = (props) => {
   const [cars, setCars] = useState(null);
-  // const [getAllCars, { loading, data, error }] = useLazyQuery(ALL_CARS);
-  // const [getCarCount, response] = useLazyQuery(CARS_COUNT);
+  const [totalCars, setTotalCars] = useState(null);
+  const [perPage, setPerPage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(null);
+  const [totalPages, setTotalPages] = useState(null);
 
-  const allCars = useQuery(ALL_CARS, {
-    variables: { limit: 6, skip: 0 },
-  });
+  const [getAllCars, { loading, data, error, refetch }] = useLazyQuery(ALL_CARS);
 
-  if (cars === null && allCars?.data?.cars) {
-    setCars(allCars.data.cars);
+  function getData(number) {
+    getAllCars({ variables: { limit: 6, page: number } });
   }
 
-  // useEffect(() => {
-  //   //   getCarCount();
-  //   getAllCars({ variables: { limit: 6, skip: Number(props.match.params.page) } });
-  // }, []);
+  useEffect(() => {
+    console.log("useEffect run!");
 
-  // if (cars === null && data?.cars) {
-  //   setCars(data.cars);
-  // }
+    getData(parseInt(props.match.params.page));
+  }, [props.match.params.page]);
 
-  // console.log(response?.data?.carCount?.totalCars);
+  if (cars === null && data?.paginatedCars?.cars) {
+    setCars(data.paginatedCars.cars);
+    setTotalCars(data.paginatedCars.totalCars);
+    setCurrentPage(data.paginatedCars.currentPage);
+    setPerPage(data.paginatedCars.perPage);
+    setTotalPages(data.paginatedCars.totalPages);
+  }
 
-  const fetchData = ({ deleteCar: { id } }) => {
-    // let updatedCars = cars.filter((item) => item.id !== id);
-    // setCars(updatedCars);
+  const changePage = (number) => {
+    props.history.push(`/all-cars/${number}`);
+  };
+
+  const carDeleted = (car) => {
+    console.log(car);
+
+    let updatedCars = cars.filter((item) => item.id !== car.deleteCar.id);
+
+    setCars(updatedCars);
   };
 
   const renderCars = (carData) => {
@@ -68,7 +56,7 @@ const Cars = (props) => {
               name={name}
               make={make}
               company={company}
-              fetchUpdatedData={fetchData}
+              fetchUpdatedData={carDeleted}
             />
           ))}
         </div>
@@ -89,42 +77,45 @@ const Cars = (props) => {
   let renderPageNumbers, firstPageItem, lastPageItem;
   const pageNumbers = [];
 
-  // if (response?.data?.carCount?.totalCars) {
-  //   const total = response?.data?.carCount?.totalCars;
-  //   const lastPage = Math.ceil(total / 6);
+  if (data?.paginatedCars?.cars) {
+    const lastPage = Math.ceil(totalCars / 6);
 
-  //   for (let i = 1; i <= Math.ceil(total / 6); i++) {
-  //     pageNumbers.push(i);
-  //   }
+    for (let i = 1; i <= Math.ceil(totalCars / 6); i++) {
+      pageNumbers.push(i);
+    }
 
-  //   renderPageNumbers = pageNumbers.map((number) => {
-  //     return (
-  //       <li
-  //         key={number}
-  //         className={Number(props.match.params.page) === number ? "page-item active-page" : ""}>
-  //         <Link to={`/all-cars/${number}`} className="page-link">
-  //           {number}
-  //         </Link>
-  //       </li>
-  //     );
-  //   });
+    renderPageNumbers = pageNumbers.map((number) => {
+      return (
+        <li key={number} className="page-item">
+          <button
+            className={
+              parseInt(props.match.params.page) === number
+                ? "page-link btn bg-dark text-white"
+                : "page-link btn text-dark"
+            }
+            onClick={() => changePage(number)}>
+            {number}
+          </button>
+        </li>
+      );
+    });
 
-  //   firstPageItem = (
-  //     <li key={0} className="page-item">
-  //       <Link to={`/all-cars/1`} className="page-link">
-  //         &laquo;
-  //       </Link>
-  //     </li>
-  //   );
+    firstPageItem = (
+      <li key={0} className="page-item">
+        <button className="page-link btn text-dark" onClick={() => changePage(1)}>
+          &laquo;
+        </button>
+      </li>
+    );
 
-  //   lastPageItem = (
-  //     <li key={lastPage + 1} className="page-item">
-  //       <Link to={`/all-cars/${lastPage}`} className="page-link">
-  //         &raquo;
-  //       </Link>
-  //     </li>
-  //   );
-  // }
+    lastPageItem = (
+      <li key={lastPage + 1} className="page-item">
+        <button className="page-link btn text-dark" onClick={() => changePage(lastPage)}>
+          &raquo;
+        </button>
+      </li>
+    );
+  }
 
   return (
     <div className="profiles mt-2">
@@ -133,13 +124,15 @@ const Cars = (props) => {
         <p className="lead text-center">See All Cars Here</p>
         {renderCars(cars)}
 
-        <div className="card-group justify-content-center">
-          <ul className="pagination-list">
-            {firstPageItem}
-            {renderPageNumbers}
-            {lastPageItem}
-          </ul>
-        </div>
+        {cars?.length > 0 ? (
+          <div className="card-group justify-content-center">
+            <ul className="pagination-list">
+              {firstPageItem}
+              {renderPageNumbers}
+              {lastPageItem}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -5,25 +5,8 @@ import { gql } from "apollo-boost";
 import TextField from "../Common/TextField";
 import SelectList from "../Common/SelectList";
 import Spinner from "../Common/Spinner";
-
-const EDIT_CAR = gql`
-  mutation EditCar($carId: String!, $name: String!, $make: String!, $company: String!) {
-    updateCar(carId: $carId, name: $name, make: $make, company: $company) {
-      id
-      name
-      make
-    }
-  }
-`;
-
-const GET_COMPANIES = gql`
-  {
-    companies {
-      id
-      name
-    }
-  }
-`;
+import { EDIT_CAR, ALL_CARS } from "../../queries/Car";
+import { GET_COMPANIES } from "../../queries/Company";
 
 const EditCar = (props) => {
   const [name, setName] = useState("");
@@ -50,7 +33,6 @@ const EditCar = (props) => {
   }
 
   const allCompanies = useQuery(GET_COMPANIES);
-
   const [editCar, { loading }] = useMutation(EDIT_CAR);
 
   const onSubmit = (e) => {
@@ -71,6 +53,8 @@ const EditCar = (props) => {
 
     editCar({
       variables: { carId: props.location.state.car.id, name: name, make: make, company: company },
+      refetchQueries: [{ query: ALL_CARS, variables: { limit: 6, page: 1 } }],
+      awaitRefetchQueries: true,
     })
       .then((res) => {
         console.log(res);

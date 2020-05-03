@@ -1,16 +1,8 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
 
-const DELETE_CAR = gql`
-  mutation DeleteCar($carId: String!) {
-    deleteCar(carId: $carId) {
-      id
-      name
-    }
-  }
-`;
+import { DELETE_CAR } from "../../queries/Car";
 
 const CarCard = ({ id, name, make, company, fetchUpdatedData, history }) => {
   const [deleteCar, { loading }] = useMutation(DELETE_CAR);

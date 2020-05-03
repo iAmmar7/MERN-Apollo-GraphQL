@@ -1,18 +1,8 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
 
+import { ADD_COMPANY, GET_COMPANIES } from "../../queries/Company";
 import TextField from "../Common/TextField";
-
-const ADD_COMPANY = gql`
-  mutation AddCompany($name: String!, $location: String!) {
-    addCompany(name: $name, location: $location) {
-      id
-      name
-      location
-    }
-  }
-`;
 
 const AddCompany = (props) => {
   const [name, setName] = useState("");
@@ -26,8 +16,6 @@ const AddCompany = (props) => {
 
     setErrors({});
 
-    console.log(errors, name, location);
-
     if (name.trim().length < 1) {
       setErrors({ ...errors, name: "Compnay name is required!" });
       return;
@@ -37,7 +25,11 @@ const AddCompany = (props) => {
       return;
     }
 
-    addCompany({ variables: { name: name, location: location } })
+    addCompany({
+      variables: { name: name, location: location },
+      refetchQueries: [{ query: GET_COMPANIES }],
+      awaitRefetchQueries: true,
+    })
       .then((res) => {
         console.log(res);
         props.history.push("/add-car");

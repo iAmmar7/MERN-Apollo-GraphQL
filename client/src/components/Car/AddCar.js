@@ -1,29 +1,12 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
 
 import TextField from "../Common/TextField";
 import SelectList from "../Common/SelectList";
 import Spinner from "../Common/Spinner";
-
-const ADD_CAR = gql`
-  mutation AddCar($name: String!, $make: String!, $company: String!) {
-    addCar(name: $name, make: $make, company: $company) {
-      id
-      name
-      make
-    }
-  }
-`;
-
-const GET_COMPANIES = gql`
-  {
-    companies {
-      id
-      name
-    }
-  }
-`;
+import { ADD_CAR, ALL_CARS } from "../../queries/Car";
+import { GET_COMPANIES } from "../../queries/Company";
 
 const AddCar = (props) => {
   const [name, setName] = useState("");
@@ -51,7 +34,11 @@ const AddCar = (props) => {
       setErrors({});
     }
 
-    addCar({ variables: { name: name, make: make, company: company } })
+    addCar({
+      variables: { name: name, make: make, company: company },
+      refetchQueries: [{ query: ALL_CARS, variables: { limit: 6, page: 1 } }],
+      awaitRefetchQueries: true,
+    })
       .then((res) => {
         console.log(res);
         props.history.push("/all-cars/1");
@@ -86,6 +73,22 @@ const AddCar = (props) => {
     );
   } else {
     renderCompanies = <Spinner />;
+  }
+
+  if (!allCompanies?.data?.companies?.length > 0) {
+    return (
+      <div className="profiles mt-2">
+        <div className="col-md-12">
+          <h1 className="display-4 text-center title">Cars</h1>
+          <p className="lead text-center">See All Cars Here</p>
+          <div className="card-group justify-content-center">
+            <Link to="/add-company" className="btn btn-lg btn-primary">
+              Please add a company first!
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
