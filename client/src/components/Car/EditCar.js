@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
 
 import TextField from "../Common/TextField";
 import SelectList from "../Common/SelectList";

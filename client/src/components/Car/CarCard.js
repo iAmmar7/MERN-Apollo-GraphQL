@@ -1,17 +1,21 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
 
-import { DELETE_CAR } from "../../queries/Car";
+import { DELETE_CAR, ALL_CARS } from "../../queries/Car";
 
 const CarCard = ({ id, name, make, company, fetchUpdatedData, history }) => {
   const [deleteCar, { loading }] = useMutation(DELETE_CAR);
 
   const carDeleteHandler = () => {
-    deleteCar({ variables: { carId: id } })
+    deleteCar({
+      variables: { carId: id },
+      refetchQueries: [{ query: ALL_CARS, variables: { limit: 6, page: 1 } }],
+      awaitRefetchQueries: true,
+    })
       .then((res) => {
         console.log(res);
-
+        // history.push("/all-cars/1");
         fetchUpdatedData(res.data);
       })
       .catch((err) => console.log(err));

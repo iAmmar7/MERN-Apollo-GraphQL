@@ -24,7 +24,7 @@ const AddCar = (props) => {
     if (name.trim().length < 1) {
       setErrors({ name: "Car name is required!" });
       return;
-    } else if (make.trim().length < 4) {
+    } else if (make.trim().length < 4 || make.trim().length > 4) {
       setErrors({ make: "Car making year must be 4 digit!" });
       return;
     } else if (company.length === 0) {
@@ -60,7 +60,9 @@ const AddCar = (props) => {
   };
 
   let renderCompanies = null;
-  if (allCompanies?.data?.companies?.length > 0) {
+  if (allCompanies.loading) {
+    renderCompanies = <Spinner />;
+  } else if (allCompanies?.data?.companies?.length) {
     renderCompanies = (
       <SelectList
         name="company"
@@ -71,11 +73,9 @@ const AddCar = (props) => {
         info="Select a company of this car"
       />
     );
-  } else {
-    renderCompanies = <Spinner />;
   }
 
-  if (!allCompanies?.data?.companies?.length > 0) {
+  if (allCompanies?.data?.companies && !allCompanies?.data?.companies?.length > 0) {
     return (
       <div className="profiles mt-2">
         <div className="col-md-12">

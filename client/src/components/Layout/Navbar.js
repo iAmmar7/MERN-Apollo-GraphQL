@@ -1,7 +1,7 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = (props) => {
   return (
     <nav className="navbar navbar-dark bg-dark navbar-expand">
       <div className="collapse navbar-collapse" id="mobile-nav">
@@ -17,7 +17,12 @@ const Navbar = () => {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/all-cars/1" className="nav-link">
+            <NavLink
+              to="/all-cars/1"
+              className={
+                props.location.pathname.includes("/all-cars") ? "nav-link active" : "nav-link"
+              }
+              activeClassName="active">
               All Cars
             </NavLink>
           </li>
@@ -27,4 +32,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default withRouter(Navbar);

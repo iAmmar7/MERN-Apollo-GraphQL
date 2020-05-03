@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useLazyQuery, useQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 import Spinner from "../Common/Spinner";
 import CarCard from "./CarCard";
@@ -9,19 +9,20 @@ import { ALL_CARS } from "../../queries/Car";
 const Cars = (props) => {
   const [cars, setCars] = useState(null);
   const [totalCars, setTotalCars] = useState(null);
-  const [perPage, setPerPage] = useState(null);
   const [currentPage, setCurrentPage] = useState(null);
-  const [totalPages, setTotalPages] = useState(null);
 
-  const [getAllCars, { loading, data, error, refetch }] = useLazyQuery(ALL_CARS);
+  const [getAllCars, { data }] = useLazyQuery(ALL_CARS);
 
   function getData(number) {
-    getAllCars({ variables: { limit: 6, page: number } });
+    getAllCars({
+      variables: { limit: 6, page: number },
+      refetchQueries: [{ query: ALL_CARS, variables: { limit: 6, page: number } }],
+      awaitRefetchQueries: true,
+    });
   }
 
   useEffect(() => {
-    console.log("useEffect run!");
-
+    console.log("useEffect run!", [props.match.params.page]);
     getData(parseInt(props.match.params.page));
   }, [props.match.params.page]);
 
@@ -29,17 +30,14 @@ const Cars = (props) => {
     setCars(data.paginatedCars.cars);
     setTotalCars(data.paginatedCars.totalCars);
     setCurrentPage(data.paginatedCars.currentPage);
-    setPerPage(data.paginatedCars.perPage);
-    setTotalPages(data.paginatedCars.totalPages);
   }
 
   const changePage = (number) => {
+    // setCurrentPage(number)
     props.history.push(`/all-cars/${number}`);
   };
 
   const carDeleted = (car) => {
-    console.log(car);
-
     let updatedCars = cars.filter((item) => item.id !== car.deleteCar.id);
 
     setCars(updatedCars);
