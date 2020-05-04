@@ -5,8 +5,6 @@ import CarCard from "./CarCard";
 import Spinner from "../Common/Spinner";
 
 const AllCars = ({ carData, carDeleted, currentPage, history }) => {
-  console.log(carData, currentPage);
-
   if (carData !== null && carData.length > 0) {
     return (
       <div className="card-group justify-content-center">

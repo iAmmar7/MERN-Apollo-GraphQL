@@ -7,6 +7,10 @@ import { ALL_CARS } from "../../queries/Car";
 import Spinner from "../Common/Spinner";
 
 function Pagination({ totalCars, currentPage, history }) {
+  if (totalCars === 0) {
+    return null;
+  }
+
   let renderPageNumbers, firstPageItem, lastPageItem;
   const pageNumbers = [];
 
@@ -51,7 +55,7 @@ function Pagination({ totalCars, currentPage, history }) {
   );
 
   return (
-    <div className="card-group justify-content-center">
+    <div className="d-flex justify-content-center">
       <ul className="pagination-list">
         {firstPageItem}
         {renderPageNumbers}
