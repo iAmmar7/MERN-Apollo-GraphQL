@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
 
 import { DELETE_CAR, ALL_CARS } from "../../queries/Car";
+import Spinner from "../Common/Spinner";
 
 const CarCard = ({ id, name, make, company, fetchUpdatedData, history }) => {
   const [deleteCar, { loading }] = useMutation(DELETE_CAR);

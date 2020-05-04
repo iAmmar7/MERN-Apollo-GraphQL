@@ -12,7 +12,8 @@ import Cars from "./components/Car/Cars";
 import "./App.css";
 
 const client = new ApolloClient({
-  uri: "/graphql",
+  // uri: "/graphql",
+  uri: "http://localhost:4000/graphql",
 });
 
 function App() {
